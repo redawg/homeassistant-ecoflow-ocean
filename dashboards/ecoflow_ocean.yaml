@@ -1,0 +1,173 @@
+# EcoFlow Ocean dashboard — import or reference from configuration.yaml
+#
+# Before use: replace every "ecoflow_powerocean" prefix with your entity prefix.
+# Developer Tools → States → search "battery_soc" and copy the prefix before "_battery_soc".
+#
+# Requires HACS card: Power Flow Card Plus (flixlix/power-flow-card-plus)
+
+title: EcoFlow Ocean
+theme: ecoflow_ocean
+background: var(--primary-background-color)
+
+views:
+  - title: Live
+    path: live
+    icon: mdi:home-lightning-bolt
+    theme: ecoflow_ocean
+    cards:
+      - type: custom:power-flow-card-plus
+        title: PowerOcean
+        fullscreen_mode: true
+        wide: true
+        clickable_entities: true
+        display_zero_lines: true
+        use_new_flow_rate_model: true
+        watt_threshold: 5
+        min_flow_rate: 0.75
+        max_flow_rate: 6
+        style_card_content: |
+          #power-flow-card-plus { --md-sys-color-surface: #1e1e1e; }
+        entities:
+          home:
+            entity: sensor.ecoflow_powerocean_home_power
+            color_icon: true
+            icon: mdi:home
+          solar:
+            entity: sensor.ecoflow_powerocean_solar_power
+            display_zero_state: true
+            color_value: true
+            color:
+              - 255
+              - 179
+              - 0
+            icon: mdi:solar-power
+          grid:
+            entity:
+              consumption: sensor.ecoflow_powerocean_grid_import_power
+              production: sensor.ecoflow_powerocean_grid_export_power
+            display_state: one_way
+            color_circle: true
+            color_value: true
+            color:
+              consumption:
+                - 66
+                - 165
+                - 245
+              production:
+                - 171
+                - 71
+                - 188
+            icon: mdi:transmission-tower
+          battery:
+            entity:
+              consumption: sensor.ecoflow_powerocean_battery_charge_power
+              production: sensor.ecoflow_powerocean_battery_discharge_power
+            state_of_charge: sensor.ecoflow_powerocean_battery_soc
+            show_state_of_charge: true
+            display_state: one_way
+            color_circle: true
+            color_value: true
+            color:
+              consumption:
+                - 33
+                - 150
+                - 243
+              production:
+                - 0
+                - 230
+                - 118
+            icon: mdi:battery-high
+
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            entity: sensor.ecoflow_powerocean_battery_soc
+            name: Battery
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 60
+              yellow: 30
+              red: 0
+          - type: entity
+            entity: sensor.ecoflow_powerocean_battery_soh
+            name: State of health
+            icon: mdi:battery-heart
+          - type: entity
+            entity: sensor.ecoflow_powerocean_grid_frequency
+            name: Grid Hz
+            icon: mdi:sine-wave
+
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.ecoflow_powerocean_solar_power
+            name: Solar
+            icon: mdi:solar-power
+          - type: entity
+            entity: sensor.ecoflow_powerocean_home_power
+            name: Home
+            icon: mdi:home
+          - type: entity
+            entity: sensor.ecoflow_powerocean_grid_power
+            name: Grid
+            icon: mdi:transmission-tower
+          - type: entity
+            entity: sensor.ecoflow_powerocean_battery_power
+            name: Battery
+            icon: mdi:battery
+
+  - title: Energy
+    path: energy
+    icon: mdi:chart-donut
+    theme: ecoflow_ocean
+    cards:
+      - type: energy-distribution
+        link_dashboard: true
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.ecoflow_powerocean_solar_energy_total
+            name: Solar total
+            icon: mdi:solar-power
+          - type: entity
+            entity: sensor.ecoflow_powerocean_home_energy_total
+            name: Home total
+            icon: mdi:home
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.ecoflow_powerocean_grid_import_energy_total
+            name: Grid import
+            icon: mdi:transmission-tower-import
+          - type: entity
+            entity: sensor.ecoflow_powerocean_grid_export_energy_total
+            name: Grid export
+            icon: mdi:transmission-tower-export
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.ecoflow_powerocean_battery_charge_energy_total
+            name: Charged
+            icon: mdi:battery-arrow-up
+          - type: entity
+            entity: sensor.ecoflow_powerocean_battery_discharge_energy_total
+            name: Discharged
+            icon: mdi:battery-arrow-down
+
+  - title: Details
+    path: details
+    icon: mdi:information-outline
+    theme: ecoflow_ocean
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: EcoFlow Ocean sensors
+          show_header_toggle: false
+        filter:
+          include:
+            - label: ecoflow_ocean
+        sort:
+          method: name

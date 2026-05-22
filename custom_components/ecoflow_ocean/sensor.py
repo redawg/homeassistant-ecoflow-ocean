@@ -209,6 +209,7 @@ class EcoFlowOceanSensor(CoordinatorEntity[EcoFlowOceanCoordinator], SensorEntit
             manufacturer="EcoFlow",
             model="PowerOcean",
             serial_number=coordinator.device_sn,
+            labels={"ecoflow_ocean"},
         )
 
     @property

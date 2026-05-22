@@ -34,6 +34,16 @@ Copy `custom_components/ecoflow_ocean` into your Home Assistant `config/custom_c
 
 Optional: **Configure** the integration to change the poll interval (default 15 seconds, minimum 10).
 
+## Dashboard (EcoFlow app style)
+
+An optional Lovelace dashboard with animated power flows (Solar / Home / Grid / Battery) and a dark theme is included:
+
+- [`dashboards/ecoflow_ocean.yaml`](dashboards/ecoflow_ocean.yaml) — main dashboard
+- [`themes/ecoflow_ocean.yaml`](themes/ecoflow_ocean.yaml) — dark EcoFlow-like theme
+- Setup guide: [`dashboards/README.md`](dashboards/README.md)
+
+Requires the HACS card **[Power Flow Card Plus](https://github.com/flixlix/power-flow-card-plus)**.
+
 ## Sensors
 
 | Sensor | Description |

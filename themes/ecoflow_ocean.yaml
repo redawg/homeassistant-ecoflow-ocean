@@ -1,0 +1,19 @@
+# Dark theme inspired by the EcoFlow mobile app.
+# Enable in Profile → Theme, or set as dashboard theme below.
+ecoflow_ocean:
+  modes:
+    dark:
+      primary-color: "#00E676"
+      accent-color: "#FFB300"
+      primary-background-color: "#0D0D0D"
+      secondary-background-color: "#1A1A1A"
+      card-background-color: "#1E1E1E"
+      ha-card-background: "#1E1E1E"
+      app-header-background-color: "#121212"
+      sidebar-background-color: "#121212"
+      divider-color: "#333333"
+      primary-text-color: "#FFFFFF"
+      secondary-text-color: "#B0BEC5"
+      disabled-text-color: "#546E7A"
+      state-icon-color: "#90A4AE"
+      state-icon-active-color: "#00E676"
