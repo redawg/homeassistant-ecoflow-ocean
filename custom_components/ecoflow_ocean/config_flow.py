@@ -8,9 +8,13 @@ from typing import Any
 import aiohttp
 import voluptuous as vol
 
-from homeassistant import config_entries
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult, OptionsFlow
-from homeassistant.core import callback
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlow,
+)
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
     SelectOptionDict,
@@ -123,9 +127,10 @@ class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
         device_by_sn = {
             device["sn"]: device for device in self._devices if device.get("sn")
         }
-        options = {
-            sn: config_flow_device_label(device) for sn, device in device_by_sn.items()
-        }
+        device_options = [
+            SelectOptionDict(value=sn, label=config_flow_device_label(device))
+            for sn, device in device_by_sn.items()
+        ]
 
         if user_input is not None:
             sn = user_input[CONF_DEVICE_SN]
@@ -156,7 +161,7 @@ class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
                     options={},
                 )
 
-        if not options:
+        if not device_options:
             return self.async_abort(reason="no_devices")
 
         return self.async_show_form(
@@ -165,7 +170,7 @@ class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(CONF_DEVICE_SN): SelectSelector(
                         SelectSelectorConfig(
-                            options=options,
+                            options=device_options,
                             mode=SelectSelectorMode.DROPDOWN,
                         )
                     ),
@@ -181,24 +186,8 @@ class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(
-        config_entry: config_entries.ConfigEntry,
-    ) -> EcoFlowOceanOptionsFlow:
+    def async_get_options_flow(config_entry: ConfigEntry) -> EcoFlowOceanOptionsFlow:
         return EcoFlowOceanOptionsFlow()
-
-    @staticmethod
-    async def async_migrate_entry(hass, config_entry: config_entries.ConfigEntry) -> bool:
-        """Migrate v1 entries to store device type metadata."""
-        if config_entry.version == 1:
-            data = dict(config_entry.data)
-            data.setdefault(CONF_DEVICE_TYPE, "powerocean")
-            data.setdefault(CONF_PRODUCT_NAME, "")
-            hass.config_entries.async_update_entry(
-                config_entry,
-                data=data,
-                version=2,
-            )
-        return True
 
 
 class EcoFlowOceanOptionsFlow(OptionsFlow):
@@ -223,3 +212,17 @@ class EcoFlowOceanOptionsFlow(OptionsFlow):
                 }
             ),
         )
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+    """Migrate v1 entries to store device type metadata."""
+    if config_entry.version == 1:
+        data = dict(config_entry.data)
+        data.setdefault(CONF_DEVICE_TYPE, "powerocean")
+        data.setdefault(CONF_PRODUCT_NAME, "")
+        hass.config_entries.async_update_entry(
+            config_entry,
+            data=data,
+            version=2,
+        )
+    return True
