@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-import aiohttp
 import voluptuous as vol
 
 from homeassistant.config_entries import (
@@ -23,8 +22,9 @@ from homeassistant.helpers.selector import (
     SelectSelectorMode,
 )
 
-from .api import API_BASE_EU, API_BASE_US, IoTApiClient, api_base_for_region
 from .api.const import (
+    API_BASE_EU,
+    API_BASE_US,
     CONF_ACCESS_KEY,
     CONF_DEVICE_SN,
     CONF_DEVICE_TYPE,
@@ -34,16 +34,19 @@ from .api.const import (
     DEFAULT_SCAN_INTERVAL,
     REGION_EU,
     REGION_US,
+    api_base_for_region,
 )
 from .const import DOMAIN
-from .device_types import (
-    HACS_DISPLAY_NAME,
-    classify_device,
-    config_flow_device_label,
-    device_type_label,
-)
+
+if TYPE_CHECKING:
+    import aiohttp
 
 _LOGGER = logging.getLogger(__name__)
+
+# Display name only — keep out of device_types import at module load
+_INTEGRATION_TITLE = (
+    "Ecoflow Ocean USA - full system (Panel,Inverter, Batteries, EV charger, Power insight)"
+)
 
 
 class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -68,6 +71,9 @@ class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
             self._secret_key = user_input[CONF_SECRET_KEY].strip()
             self._region = user_input[CONF_REGION]
 
+            # Lazy imports — avoid loading aiohttp/iot_api when HA imports config_flow
+            from .api.iot_api import IoTApiClient
+
             session = async_get_clientsession(self.hass)
             api = IoTApiClient(
                 session,
@@ -86,11 +92,18 @@ class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
                     else:
                         self._devices = devices
                         return await self.async_step_device()
-            except (aiohttp.ClientError, TimeoutError, OSError):
+            except (TimeoutError, OSError):
                 errors["base"] = "cannot_connect"
-            except Exception:  # noqa: BLE001
-                _LOGGER.exception("Unexpected error validating EcoFlow API credentials")
-                errors["base"] = "unknown"
+            except Exception as err:  # noqa: BLE001
+                import aiohttp
+
+                if isinstance(err, aiohttp.ClientError):
+                    errors["base"] = "cannot_connect"
+                else:
+                    _LOGGER.exception(
+                        "Unexpected error validating EcoFlow API credentials"
+                    )
+                    errors["base"] = "unknown"
 
         return self.async_show_form(
             step_id="user",
@@ -114,7 +127,7 @@ class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
                 "docs_url": "https://developer.ecoflow.com/us/document/introduction",
                 "api_us": API_BASE_US,
                 "api_eu": API_BASE_EU,
-                "integration_name": HACS_DISPLAY_NAME,
+                "integration_name": _INTEGRATION_TITLE,
             },
         )
 
@@ -122,6 +135,12 @@ class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Select a device from the developer application."""
+        from .device_types import (
+            classify_device,
+            config_flow_device_label,
+            device_type_label,
+        )
+
         errors: dict[str, str] = {}
 
         device_by_sn = {

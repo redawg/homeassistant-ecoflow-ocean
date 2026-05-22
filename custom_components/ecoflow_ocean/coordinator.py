@@ -9,7 +9,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import EcoFlowHTTPQuota, api_base_for_region
+from .api import EcoFlowHTTPQuota
+from .api.const import api_base_for_region
 from .api.const import (
     CONF_ACCESS_KEY,
     CONF_DEVICE_SN,

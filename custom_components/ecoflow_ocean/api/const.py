@@ -24,3 +24,8 @@ REGION_US = "us"
 REGION_EU = "eu"
 
 DEFAULT_SCAN_INTERVAL = 15
+
+
+def api_base_for_region(region: str) -> str:
+    """Return regional API host."""
+    return API_BASE_EU if region == REGION_EU else API_BASE_US
