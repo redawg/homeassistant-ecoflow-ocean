@@ -1,6 +1,6 @@
 {
   "domain": "ecoflow_ocean",
-  "name": "EcoFlow Ocean",
+  "name": "Ecoflow Ocean USA - full system (Panel,Inverter, Batteries, EV charger, Power insight)",
   "codeowners": ["@redawg"],
   "config_flow": true,
   "documentation": "https://github.com/redawg/homeassistant-ecoflow-ocean",
@@ -9,5 +9,5 @@
   "issue_tracker": "https://github.com/redawg/homeassistant-ecoflow-ocean/issues",
   "loggers": ["custom_components.ecoflow_ocean"],
   "requirements": [],
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

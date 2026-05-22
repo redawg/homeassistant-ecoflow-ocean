@@ -16,6 +16,8 @@ HTTP_RETRY_BACKOFF_S = 2.0
 CONF_ACCESS_KEY = "access_key"
 CONF_SECRET_KEY = "secret_key"
 CONF_DEVICE_SN = "device_sn"
+CONF_DEVICE_TYPE = "device_type"
+CONF_PRODUCT_NAME = "product_name"
 CONF_REGION = "region"
 
 REGION_US = "us"

@@ -2,8 +2,8 @@
   "config": {
     "step": {
       "user": {
-        "title": "EcoFlow Developer API",
-        "description": "Enter API keys from the [EcoFlow Developer Portal]({docs_url}). US API: `{api_us}` · EU API: `{api_eu}`. Bind your PowerOcean serial number to the application before setup.",
+        "title": "EcoFlow Developer API (USA full system)",
+        "description": "Connect {integration_name} using keys from the [EcoFlow Developer Portal]({docs_url}). US: `{api_us}` · EU: `{api_eu}`. Bind each device serial (Panel, Inverter, EV charger, PowerInsight) to your application.",
         "data": {
           "access_key": "Access Key",
           "secret_key": "Secret Key",
@@ -11,8 +11,8 @@
         }
       },
       "device": {
-        "title": "Select device",
-        "description": "Choose the PowerOcean system linked to your developer application.",
+        "title": "Select system device",
+        "description": "Choose one EcoFlow device. Supported: {supported}. Add each device as a separate config entry.",
         "data": {
           "device_sn": "Device"
         }
@@ -21,7 +21,7 @@
     "error": {
       "invalid_auth": "Invalid Access Key or Secret Key",
       "cannot_connect": "Cannot reach EcoFlow API — check network and region",
-      "no_devices": "No devices found — bind your device in the developer portal",
+      "no_devices": "No devices found — bind devices in the developer portal",
       "unknown": "Unexpected error during setup"
     },
     "abort": {
@@ -60,7 +60,17 @@
       "grid_import_energy_total": { "name": "Grid import energy total" },
       "grid_export_energy_total": { "name": "Grid export energy total" },
       "battery_charge_energy_total": { "name": "Battery charge energy total" },
-      "battery_discharge_energy_total": { "name": "Battery discharge energy total" }
+      "battery_discharge_energy_total": { "name": "Battery discharge energy total" },
+      "ev_charge_power": { "name": "EV charge power" },
+      "ev_voltage": { "name": "EV voltage" },
+      "ev_current": { "name": "EV current" },
+      "ev_session_energy_kwh": { "name": "EV session energy" },
+      "ev_charge_state": { "name": "EV charge state" },
+      "ev_work_mode": { "name": "EV work mode" },
+      "panel_power": { "name": "Panel power" },
+      "panel_load_power": { "name": "Panel load power" },
+      "circuit_load_power": { "name": "Circuit load power" },
+      "panel_state": { "name": "Panel state" }
     }
   }
 }

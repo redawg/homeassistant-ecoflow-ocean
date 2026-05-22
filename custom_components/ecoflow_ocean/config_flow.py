@@ -23,6 +23,8 @@ from .api import API_BASE_EU, API_BASE_US, IoTApiClient, api_base_for_region
 from .api.const import (
     CONF_ACCESS_KEY,
     CONF_DEVICE_SN,
+    CONF_DEVICE_TYPE,
+    CONF_PRODUCT_NAME,
     CONF_REGION,
     CONF_SECRET_KEY,
     DEFAULT_SCAN_INTERVAL,
@@ -30,21 +32,20 @@ from .api.const import (
     REGION_US,
 )
 from .const import DOMAIN
+from .device_types import (
+    HACS_DISPLAY_NAME,
+    classify_device,
+    config_flow_device_label,
+    device_type_label,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def _device_label(device: dict[str, Any]) -> str:
-    name = device.get("deviceName") or device.get("productName") or "EcoFlow device"
-    sn = device.get("sn", "")
-    online = "online" if device.get("online") else "offline"
-    return f"{name} ({sn}) — {online}"
-
-
 class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle EcoFlow Ocean setup via Developer API keys."""
+    """Handle EcoFlow Ocean USA full-system setup via Developer API keys."""
 
-    VERSION = 1
+    VERSION = 2
 
     def __init__(self) -> None:
         self._access_key = ""
@@ -109,36 +110,51 @@ class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
                 "docs_url": "https://developer.ecoflow.com/us/document/introduction",
                 "api_us": API_BASE_US,
                 "api_eu": API_BASE_EU,
+                "integration_name": HACS_DISPLAY_NAME,
             },
         )
 
     async def async_step_device(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Select the PowerOcean device serial number."""
+        """Select a device from the developer application."""
         errors: dict[str, str] = {}
 
+        device_by_sn = {
+            device["sn"]: device for device in self._devices if device.get("sn")
+        }
         options = {
-            device["sn"]: _device_label(device)
-            for device in self._devices
-            if device.get("sn")
+            sn: config_flow_device_label(device) for sn, device in device_by_sn.items()
         }
 
         if user_input is not None:
             sn = user_input[CONF_DEVICE_SN]
-            await self.async_set_unique_id(sn)
-            self._abort_if_unique_id_configured()
+            device = device_by_sn.get(sn)
+            if not device:
+                errors["base"] = "unknown"
+            else:
+                device_type = classify_device(device)
+                product_name = (
+                    device.get("productName")
+                    or device.get("deviceName")
+                    or ""
+                )
+                await self.async_set_unique_id(sn)
+                self._abort_if_unique_id_configured()
 
-            return self.async_create_entry(
-                title=f"EcoFlow Ocean ({sn})",
-                data={
-                    CONF_ACCESS_KEY: self._access_key,
-                    CONF_SECRET_KEY: self._secret_key,
-                    CONF_REGION: self._region,
-                    CONF_DEVICE_SN: sn,
-                },
-                options={},
-            )
+                type_label = device_type_label(device_type)
+                return self.async_create_entry(
+                    title=f"{type_label} ({sn[-6:]})",
+                    data={
+                        CONF_ACCESS_KEY: self._access_key,
+                        CONF_SECRET_KEY: self._secret_key,
+                        CONF_REGION: self._region,
+                        CONF_DEVICE_SN: sn,
+                        CONF_DEVICE_TYPE: device_type,
+                        CONF_PRODUCT_NAME: product_name,
+                    },
+                    options={},
+                )
 
         if not options:
             return self.async_abort(reason="no_devices")
@@ -148,17 +164,41 @@ class EcoFlowOceanConfigFlow(ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_DEVICE_SN): SelectSelector(
-                        SelectSelectorConfig(options=options, mode=SelectSelectorMode.DROPDOWN)
+                        SelectSelectorConfig(
+                            options=options,
+                            mode=SelectSelectorMode.DROPDOWN,
+                        )
                     ),
                 }
             ),
             errors=errors,
+            description_placeholders={
+                "supported": (
+                    "OCEAN Pro, Inverter/Batteries, Smart Panel, EV Charger, PowerInsight"
+                ),
+            },
         )
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> EcoFlowOceanOptionsFlow:
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> EcoFlowOceanOptionsFlow:
         return EcoFlowOceanOptionsFlow()
+
+    @staticmethod
+    async def async_migrate_entry(hass, config_entry: config_entries.ConfigEntry) -> bool:
+        """Migrate v1 entries to store device type metadata."""
+        if config_entry.version == 1:
+            data = dict(config_entry.data)
+            data.setdefault(CONF_DEVICE_TYPE, "powerocean")
+            data.setdefault(CONF_PRODUCT_NAME, "")
+            hass.config_entries.async_update_entry(
+                config_entry,
+                data=data,
+                version=2,
+            )
+        return True
 
 
 class EcoFlowOceanOptionsFlow(OptionsFlow):
