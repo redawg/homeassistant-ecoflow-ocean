@@ -107,6 +107,7 @@ Store API keys only in Home Assistant’s encrypted config entry—never commit 
 
 ## Related projects
 
+- [homeassistant-ecoflow-ocean-mqtt](https://github.com/redawg/homeassistant-ecoflow-ocean-mqtt) — real-time MQTT push (same sensors, lower latency; runs alongside this integration)
 - [shuette42/ecoflow-energy-ha](https://github.com/shuette42/ecoflow-energy-ha) — broader EcoFlow device support
 - [MaxGrmm/EF-PowerOcean-TcpModbus](https://github.com/MaxGrmm/EF-PowerOcean-TcpModbus) — local Modbus TCP (no cloud)
 
