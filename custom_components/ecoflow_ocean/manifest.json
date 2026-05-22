@@ -1,0 +1,13 @@
+{
+  "domain": "ecoflow_ocean",
+  "name": "EcoFlow Ocean",
+  "codeowners": ["@redawg"],
+  "config_flow": true,
+  "documentation": "https://github.com/redawg/homeassistant-ecoflow-ocean",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/redawg/homeassistant-ecoflow-ocean/issues",
+  "loggers": ["custom_components.ecoflow_ocean"],
+  "requirements": [],
+  "version": "0.1.0"
+}

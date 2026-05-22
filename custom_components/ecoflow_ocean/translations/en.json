@@ -1,0 +1,66 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "EcoFlow Developer API",
+        "description": "Enter API keys from the [EcoFlow Developer Portal]({docs_url}). US API: `{api_us}` · EU API: `{api_eu}`. Bind your PowerOcean serial number to the application before setup.",
+        "data": {
+          "access_key": "Access Key",
+          "secret_key": "Secret Key",
+          "region": "API region"
+        }
+      },
+      "device": {
+        "title": "Select device",
+        "description": "Choose the PowerOcean system linked to your developer application.",
+        "data": {
+          "device_sn": "Device"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid Access Key or Secret Key",
+      "cannot_connect": "Cannot reach EcoFlow API — check network and region",
+      "no_devices": "No devices found — bind your device in the developer portal",
+      "unknown": "Unexpected error during setup"
+    },
+    "abort": {
+      "already_configured": "Device is already configured",
+      "no_devices": "No devices available"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Polling options",
+        "data": {
+          "scan_interval": "Update interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery_soc": { "name": "Battery SOC" },
+      "battery_power": { "name": "Battery power" },
+      "battery_charge_power": { "name": "Battery charge power" },
+      "battery_discharge_power": { "name": "Battery discharge power" },
+      "solar_power": { "name": "Solar power" },
+      "home_power": { "name": "Home power" },
+      "grid_power": { "name": "Grid power" },
+      "grid_import_power": { "name": "Grid import power" },
+      "grid_export_power": { "name": "Grid export power" },
+      "grid_frequency": { "name": "Grid frequency" },
+      "battery_voltage": { "name": "Battery voltage" },
+      "battery_current": { "name": "Battery current" },
+      "battery_soh": { "name": "Battery state of health" },
+      "battery_max_cell_temp": { "name": "Battery max cell temperature" },
+      "solar_energy_total": { "name": "Solar energy total" },
+      "home_energy_total": { "name": "Home energy total" },
+      "grid_import_energy_total": { "name": "Grid import energy total" },
+      "grid_export_energy_total": { "name": "Grid export energy total" },
+      "battery_charge_energy_total": { "name": "Battery charge energy total" },
+      "battery_discharge_energy_total": { "name": "Battery discharge energy total" }
+    }
+  }
+}
