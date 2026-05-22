@@ -1,0 +1,129 @@
+---
+- name: Validate required variables
+  ansible.builtin.assert:
+    that:
+      - ha_config_dir | length > 0
+      - ecoflow_entity_prefix | length > 0
+      - ecoflow_entity_prefix is match('^[a-z0-9_]+$')
+    fail_msg: >-
+      Set ha_config_dir and ecoflow_entity_prefix (lowercase slug, e.g. ecoflow_powerocean).
+      Find prefix in HA: Developer Tools → States → sensor.<prefix>_battery_soc
+
+- name: Check Home Assistant configuration directory exists
+  ansible.builtin.stat:
+    path: "{{ ha_config_dir }}"
+  register: ha_config_stat
+
+- name: Fail when configuration directory is missing
+  ansible.builtin.fail:
+    msg: "Home Assistant config directory not found: {{ ha_config_dir }}"
+  when: not ha_config_stat.stat.exists
+
+- name: Ensure dashboard and theme directories exist
+  ansible.builtin.file:
+    path: "{{ ha_config_dir }}/{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - dashboards
+    - themes
+    - packages
+
+- name: Deploy EcoFlow Ocean theme
+  ansible.builtin.copy:
+    src: "{{ ecoflow_repo_root }}/themes/ecoflow_ocean.yaml"
+    dest: "{{ ha_config_dir }}/themes/ecoflow_ocean.yaml"
+    mode: "0644"
+  register: theme_deploy
+
+- name: Deploy EcoFlow Ocean Lovelace dashboard
+  ansible.builtin.template:
+    src: ecoflow_ocean.yaml.j2
+    dest: "{{ ha_config_dir }}/dashboards/ecoflow_ocean.yaml"
+    mode: "0644"
+  register: dashboard_deploy
+
+- name: Deploy Home Assistant package for dashboard registration
+  ansible.builtin.template:
+    src: packages_ecoflow_ocean_dashboard.yaml.j2
+    dest: "{{ ha_config_dir }}/packages/ecoflow_ocean_dashboard.yaml"
+    mode: "0644"
+  when: ecoflow_enable_packages | bool
+  register: package_deploy
+
+- name: Read configuration.yaml
+  ansible.builtin.slurp:
+    path: "{{ ha_config_dir }}/configuration.yaml"
+  register: ha_configuration_slurp
+  when: ecoflow_enable_packages | bool
+
+- name: Check whether packages are already enabled
+  ansible.builtin.set_fact:
+    ha_packages_enabled: >-
+      {{
+        'include_dir_named packages' in (
+          ha_configuration_slurp.content | b64decode
+        )
+      }}
+  when:
+    - ecoflow_enable_packages | bool
+    - ha_configuration_slurp.content is defined
+
+- name: Enable packages in configuration.yaml
+  ansible.builtin.lineinfile:
+    path: "{{ ha_config_dir }}/configuration.yaml"
+    line: "  packages: !include_dir_named packages"
+    regexp: '^\s+packages:\s+!include_dir_named packages\s*$'
+    insertafter: "^homeassistant:"
+    state: present
+  when:
+    - ecoflow_enable_packages | bool
+    - not (ha_packages_enabled | default(false) | bool)
+  register: packages_lineinfile
+
+- name: Show manual configuration when packages are disabled
+  ansible.builtin.debug:
+    msg:
+      - "Packages install skipped (ecoflow_enable_packages=false)."
+      - "Add this to configuration.yaml:"
+      - "lovelace:"
+      - "  mode: storage"
+      - "  dashboards:"
+      - "    ecoflow-ocean:"
+      - "      mode: yaml"
+      - "      title: {{ ecoflow_dashboard_title }}"
+      - "      icon: {{ ecoflow_dashboard_icon }}"
+      - "      show_in_sidebar: true"
+      - "      filename: dashboards/ecoflow_ocean.yaml"
+      - "frontend:"
+      - "  themes: !include_dir_merge_named themes"
+  when: not (ecoflow_enable_packages | bool)
+
+- name: Restart Home Assistant when requested and files changed
+  ansible.builtin.command: ha core restart
+  when:
+    - ecoflow_restart_ha | bool
+    - >
+        theme_deploy.changed or dashboard_deploy.changed
+        or (package_deploy.changed | default(false))
+        or (packages_lineinfile.changed | default(false))
+  changed_when: true
+
+- name: Remind to restart Home Assistant
+  ansible.builtin.debug:
+    msg: "Files updated. Restart Home Assistant (Settings → System → Restart) to load the dashboard."
+  when:
+    - not (ecoflow_restart_ha | bool)
+    - >
+        theme_deploy.changed or dashboard_deploy.changed
+        or (package_deploy.changed | default(false))
+        or (packages_lineinfile.changed | default(false))
+
+- name: Installation summary
+  ansible.builtin.debug:
+    msg:
+      - "EcoFlow Ocean dashboard installed under {{ ha_config_dir }}"
+      - "Dashboard file: dashboards/ecoflow_ocean.yaml"
+      - "Entity prefix: {{ ecoflow_entity_prefix }}"
+      - "Install HACS cards: Power Flow Card Plus, Auto Entities"
+      - "Open sidebar: {{ ecoflow_dashboard_title }}"

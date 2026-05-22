@@ -44,6 +44,20 @@ An optional Lovelace dashboard with animated power flows (Solar / Home / Grid / 
 
 Requires the HACS card **[Power Flow Card Plus](https://github.com/flixlix/power-flow-card-plus)**.
 
+### Ansible install
+
+To push the dashboard and theme to Home Assistant over SSH (or locally):
+
+```bash
+cd ansible
+cp inventory.example.yml inventory.yml
+cp group_vars/homeassistant.yml.example group_vars/homeassistant.yml
+# edit ecoflow_entity_prefix and ha_config_dir
+ansible-playbook playbooks/install_dashboard.yml
+```
+
+See [`ansible/README.md`](ansible/README.md) for inventory examples (including HA OS at `/config`).
+
 ## Sensors
 
 | Sensor | Description |

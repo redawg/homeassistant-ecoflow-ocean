@@ -1,0 +1,20 @@
+---
+# Copy to inventory.yml and adjust for your environment.
+#
+# Home Assistant OS / Supervised (SSH add-on, port 22):
+#   ha_config_dir: /config
+#   ansible_user: root
+#
+# Docker / Core install (config mounted on host):
+#   ha_config_dir: /path/to/your/homeassistant/config
+#   ansible_connection: local
+
+all:
+  children:
+    homeassistant:
+      hosts:
+        ha:
+          ansible_host: 172.16.255.250
+          ansible_user: root
+          ansible_port: 22
+          ha_config_dir: /config

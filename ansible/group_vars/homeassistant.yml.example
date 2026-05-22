@@ -1,0 +1,15 @@
+---
+# Copy to group_vars/homeassistant.yml (or set in inventory / extra-vars).
+
+# Slug between "sensor." and "_battery_soc" (Developer Tools → States).
+# Example entity: sensor.ecoflow_powerocean_battery_soc → ecoflow_powerocean
+ecoflow_entity_prefix: ecoflow_powerocean
+
+# Deploy packages/ecoflow_ocean_dashboard.yaml and enable packages in configuration.yaml
+ecoflow_enable_packages: true
+
+# Restart HA after install (Home Assistant OS / Supervised with `ha` CLI only)
+ecoflow_restart_ha: true
+
+# Sidebar dashboard title
+ecoflow_dashboard_title: EcoFlow Ocean

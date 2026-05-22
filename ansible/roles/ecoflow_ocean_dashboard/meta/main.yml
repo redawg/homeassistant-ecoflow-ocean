@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: ecoflow_ocean_dashboard
+  description: Deploy EcoFlow Ocean Lovelace dashboard and theme to Home Assistant
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: GenericLinux
+      versions:
+        - all
+
+dependencies: []

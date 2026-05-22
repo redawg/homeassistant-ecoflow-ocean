@@ -1,0 +1,15 @@
+# Ansible-managed — EcoFlow Ocean dashboard package
+# https://github.com/redawg/homeassistant-ecoflow-ocean
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+lovelace:
+  mode: storage
+  dashboards:
+    ecoflow-ocean:
+      mode: yaml
+      title: "{{ ecoflow_dashboard_title }}"
+      icon: "{{ ecoflow_dashboard_icon }}"
+      show_in_sidebar: true
+      filename: dashboards/ecoflow_ocean.yaml

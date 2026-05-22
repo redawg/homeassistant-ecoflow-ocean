@@ -11,3 +11,7 @@ venv/
 dist/
 build/
 .DS_Store
+
+# Ansible local config (may contain host-specific paths)
+ansible/inventory.yml
+ansible/group_vars/homeassistant.yml

@@ -1,0 +1,21 @@
+---
+# Install EcoFlow Ocean Lovelace dashboard + theme on Home Assistant.
+#
+#   cd ansible
+#   cp inventory.example.yml inventory.yml
+#   cp group_vars/homeassistant.yml.example group_vars/homeassistant.yml
+#   # edit ecoflow_entity_prefix and ha_config_dir
+#   ansible-playbook playbooks/install_dashboard.yml
+#
+# One-off extra vars:
+#   ansible-playbook playbooks/install_dashboard.yml \
+#     -e ecoflow_entity_prefix=my_prefix -e ecoflow_restart_ha=false
+
+- name: Install EcoFlow Ocean dashboard on Home Assistant
+  hosts: homeassistant
+  gather_facts: false
+  vars:
+    # playbook_dir = ansible/playbooks → repo root is two levels up
+    ecoflow_repo_root: "{{ playbook_dir | dirname | dirname }}"
+  roles:
+    - role: ecoflow_ocean_dashboard

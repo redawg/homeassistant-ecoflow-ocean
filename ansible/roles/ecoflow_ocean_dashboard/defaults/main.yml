@@ -1,0 +1,13 @@
+---
+ha_config_dir: /config
+
+# Entity id slug: sensor.<prefix>_battery_soc
+ecoflow_entity_prefix: ecoflow_powerocean
+
+ecoflow_enable_packages: true
+ecoflow_restart_ha: false
+ecoflow_dashboard_title: EcoFlow Ocean
+ecoflow_dashboard_icon: mdi:solar-power-variant
+
+# Path to repo root when running from cloned repository
+ecoflow_repo_root: "{{ role_path }}/../../.."
