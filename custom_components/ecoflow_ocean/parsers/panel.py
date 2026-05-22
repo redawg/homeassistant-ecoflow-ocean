@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from . import safe_float
+from .utils import safe_float
 from .generic import parse_generic_quota
 from .powerocean import parse_powerocean_quota
 

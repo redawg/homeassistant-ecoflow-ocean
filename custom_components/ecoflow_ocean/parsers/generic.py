@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from . import safe_float
+from .utils import safe_float
 
 _POWER_KEY_HINTS = ("pwr", "power", "watts", "watt")
 _ENERGY_KEY_HINTS = ("energy", "watth", "kwh")

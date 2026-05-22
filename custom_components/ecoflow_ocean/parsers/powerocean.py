@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from . import safe_float
+from .utils import safe_float
 
 
 def parse_powerocean_quota(quota_data: dict[str, Any]) -> dict[str, Any]:

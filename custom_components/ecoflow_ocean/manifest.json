@@ -9,5 +9,5 @@
   "issue_tracker": "https://github.com/redawg/homeassistant-ecoflow-ocean/issues",
   "loggers": ["custom_components.ecoflow_ocean"],
   "requirements": [],
-  "version": "0.2.3"
+  "version": "0.2.4"
 }
