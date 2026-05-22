@@ -30,9 +30,9 @@ class EcoFlowHTTPQuota:
         min_interval: float = QUOTA_HTTP_MIN_INTERVAL_S,
     ) -> None:
         self._session = session
-        self._access_key = access_key
-        self._secret_key = secret_key
-        self._device_sn = device_sn
+        self._access_key = access_key.strip()
+        self._secret_key = secret_key.strip()
+        self._device_sn = device_sn.strip()
         self._base_url = base_url.rstrip("/")
         self._min_interval = min_interval
         self._last_call: float = 0.0
@@ -115,12 +115,23 @@ class EcoFlowHTTPQuota:
                             self._device_sn,
                         )
                         return None
+                    if code == "8513":
+                        self.last_error_code = "8513"
+                        _LOGGER.warning(
+                            "Invalid Access Key for quota on %s (%s) — "
+                            "re-add the integration with keys from the matching regional "
+                            "developer portal (US: api-a, EU: api-e), or regenerate keys",
+                            self._device_sn,
+                            self._base_url,
+                        )
+                        return None
                     self.last_error_code = code
                     _LOGGER.warning(
-                        "Quota error code=%s message=%s sn=%s",
+                        "Quota error code=%s message=%s sn=%s (%s)",
                         code,
                         data.get("message"),
                         self._device_sn,
+                        self._base_url,
                     )
                     return None
             except (aiohttp.ClientError, TimeoutError, self._RetryableAPIError) as exc:

@@ -91,6 +91,16 @@ Map entities in **Settings → Dashboards → Energy**:
 - **Grid export** → `sensor.*_grid_export_energy_total`
 - **Battery** → charge/discharge total sensors
 
+## Troubleshooting
+
+| API code | Message | What to do |
+|----------|---------|------------|
+| **1006** | Device not bound | Add serial number `HR51…` (your SN) in the [Developer Portal](https://developer.ecoflow.com) under your application |
+| **8513** | `accessKey is invalid` | Keys do not match the selected **region** (US → United States / `api-a`, EU → Europe / `api-e`), or keys were rotated. Delete the config entry, create new keys in the portal, and set up the integration again |
+| **8521** | Signature wrong | Report on GitHub — signing bug or API change |
+
+If setup succeeds but polling fails with **8513**, you almost always have the **wrong region** saved in the entry or **old keys** after regenerating them in the portal.
+
 ## Security
 
 Store API keys only in Home Assistant’s encrypted config entry—never commit them to git or share them in chat. Rotate keys in the developer portal if they are exposed.

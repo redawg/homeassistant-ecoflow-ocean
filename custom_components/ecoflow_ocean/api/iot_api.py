@@ -27,8 +27,8 @@ class IoTApiClient:
         base_url: str,
     ) -> None:
         self._session = session
-        self._access_key = access_key
-        self._secret_key = secret_key
+        self._access_key = access_key.strip()
+        self._secret_key = secret_key.strip()
         self._base_url = base_url.rstrip("/")
         self._cached: dict[str, Any] | None = None
         self._last_fetch_ts: float = 0.0
@@ -75,13 +75,17 @@ class IoTApiClient:
             ) as resp:
                 resp.raise_for_status()
                 body = await resp.json()
+                code = str(body.get("code"))
+                if code != "0":
+                    _LOGGER.warning(
+                        "Device list failed — code=%s message=%s (%s)",
+                        code,
+                        body.get("message"),
+                        self._base_url,
+                    )
+                    return None
                 data = body.get("data")
                 if not data:
-                    _LOGGER.warning(
-                        "Device list empty — code=%s message=%s",
-                        body.get("code"),
-                        body.get("message"),
-                    )
                     return None
                 return data if isinstance(data, list) else None
         except (aiohttp.ClientError, TimeoutError) as exc:
@@ -105,13 +109,17 @@ class IoTApiClient:
             ) as resp:
                 resp.raise_for_status()
                 body = await resp.json()
+                code = str(body.get("code"))
+                if code != "0":
+                    _LOGGER.warning(
+                        "Certification failed — code=%s message=%s (%s)",
+                        code,
+                        body.get("message"),
+                        self._base_url,
+                    )
+                    return None
                 data = body.get("data")
                 if not data:
-                    _LOGGER.warning(
-                        "Certification failed — code=%s message=%s",
-                        body.get("code"),
-                        body.get("message"),
-                    )
                     return None
                 self._cached = data
                 return data

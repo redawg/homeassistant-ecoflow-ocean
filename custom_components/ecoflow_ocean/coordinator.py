@@ -42,9 +42,9 @@ class EcoFlowOceanCoordinator(DataUpdateCoordinator[dict]):
             name=DOMAIN,
             update_interval=timedelta(seconds=scan_interval),
         )
-        self._access_key = entry_data[CONF_ACCESS_KEY]
-        self._secret_key = entry_data[CONF_SECRET_KEY]
-        self._device_sn = entry_data[CONF_DEVICE_SN]
+        self._access_key = entry_data[CONF_ACCESS_KEY].strip()
+        self._secret_key = entry_data[CONF_SECRET_KEY].strip()
+        self._device_sn = entry_data[CONF_DEVICE_SN].strip()
         self._device_type = entry_data.get(CONF_DEVICE_TYPE, DEVICE_TYPE_POWEROCEAN)
         self._product_name = entry_data.get(CONF_PRODUCT_NAME, "")
         self._region = entry_data.get(CONF_REGION, REGION_US)
