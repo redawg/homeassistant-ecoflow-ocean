@@ -1,0 +1,400 @@
+# CDO dashboard — auto-populated by label or entity id prefix
+#
+# An entity is included when ANY of these match:
+#   1. Label "CDO" (slug: cdo)
+#   2. Entity id object_id starts with "cdo_" (e.g. sensor.cdo_ecobee_humidity)
+#
+# Install HACS card: Auto Entities (custom-cards/auto-entities)
+
+title: CDO
+theme: ecoflow_ocean
+background: var(--primary-background-color)
+
+views:
+  - title: Overview
+    path: overview
+    icon: mdi:home-map-marker
+    theme: ecoflow_ocean
+    cards:
+      - type: markdown
+        content: |
+          ## CDO
+          Cards auto-populate from entities with label **CDO** or entity ids starting with **`cdo_`**
+          (e.g. `climate.cdo_ecobee`, `camera.cdo_front_door`).
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: CDO — all entities
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+            - entity_id: "*.cdo_*"
+        sort:
+          method: domain
+          reverse: false
+          numeric: false
+          ignore_case: true
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Climate & water
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              domain: climate
+            - entity_id: "*.cdo_*"
+              domain: climate
+            - label: cdo
+              domain: water_heater
+            - entity_id: "*.cdo_*"
+              domain: water_heater
+            - label: cdo
+              domain: humidifier
+            - entity_id: "*.cdo_*"
+              domain: humidifier
+            - label: cdo
+              domain: fan
+            - entity_id: "*.cdo_*"
+              domain: fan
+        sort:
+          method: name
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Security & access
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              domain: lock
+            - entity_id: "*.cdo_*"
+              domain: lock
+            - label: cdo
+              domain: alarm_control_panel
+            - entity_id: "*.cdo_*"
+              domain: alarm_control_panel
+            - label: cdo
+              domain: binary_sensor
+            - entity_id: "*.cdo_*"
+              domain: binary_sensor
+        sort:
+          method: name
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Lights & switches
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              domain: light
+            - entity_id: "*.cdo_*"
+              domain: light
+            - label: cdo
+              domain: switch
+            - entity_id: "*.cdo_*"
+              domain: switch
+            - label: cdo
+              domain: input_boolean
+            - entity_id: "*.cdo_*"
+              domain: input_boolean
+        sort:
+          method: name
+
+  - title: Climate
+    path: climate
+    icon: mdi:thermostat
+    theme: ecoflow_ocean
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: grid
+          columns: 1
+          square: false
+        card_param: cards
+        filter:
+          include:
+            - label: cdo
+              domain: climate
+            - entity_id: "*.cdo_*"
+              domain: climate
+        sort:
+          method: name
+        options:
+          type: thermostat
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: EcoNet & HVAC
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              integration: rheem_econet
+            - entity_id: "*.cdo_*"
+              integration: rheem_econet
+            - label: cdo
+              domain: water_heater
+            - entity_id: "*.cdo_*"
+              domain: water_heater
+            - label: cdo
+              domain: climate
+            - entity_id: "*.cdo_*"
+              domain: climate
+        sort:
+          method: name
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Ecobee
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              integration: ecobee
+            - entity_id: "*.cdo_*"
+              integration: ecobee
+        sort:
+          method: name
+
+  - title: Cameras
+    path: cameras
+    icon: mdi:cctv
+    theme: ecoflow_ocean
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: grid
+          columns: 2
+          square: false
+        card_param: cards
+        filter:
+          include:
+            - label: cdo
+              domain: camera
+            - entity_id: "*.cdo_*"
+              domain: camera
+        sort:
+          method: name
+        options:
+          type: picture-entity
+          camera_view: live
+          show_state: false
+          show_name: true
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Motion & camera controls
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              integration: tapo_control
+              domain: binary_sensor
+            - entity_id: "*.cdo_*"
+              integration: tapo_control
+              domain: binary_sensor
+            - label: cdo
+              integration: tapo_control
+              domain: switch
+            - entity_id: "*.cdo_*"
+              integration: tapo_control
+              domain: switch
+            - label: cdo
+              integration: tapo_control
+              domain: sensor
+            - entity_id: "*.cdo_*"
+              integration: tapo_control
+              domain: sensor
+        sort:
+          method: name
+
+  - title: Google Home
+    path: google-home
+    icon: mdi:google-home
+    theme: ecoflow_ocean
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: grid
+          columns: 1
+          square: false
+        card_param: cards
+        filter:
+          include:
+            - label: cdo
+              domain: media_player
+              integration: cast
+            - entity_id: "*.cdo_*"
+              domain: media_player
+              integration: cast
+        sort:
+          method: name
+        options:
+          type: media-control
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Cast & Nest devices
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              integration: cast
+            - entity_id: "*.cdo_*"
+              integration: cast
+            - label: cdo
+              domain: media_player
+              entity_id: "*nest*"
+            - entity_id: "*.cdo_*nest*"
+            - label: cdo
+              domain: media_player
+              entity_id: "*google*"
+            - entity_id: "*.cdo_*google*"
+        sort:
+          method: name
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Voice & routines
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              domain: script
+            - entity_id: "*.cdo_*"
+              domain: script
+            - label: cdo
+              domain: scene
+            - entity_id: "*.cdo_*"
+              domain: scene
+            - label: cdo
+              domain: automation
+            - entity_id: "*.cdo_*"
+              domain: automation
+        sort:
+          method: name
+
+  - title: LG
+    path: lg
+    icon: mdi:television
+    theme: ecoflow_ocean
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: grid
+          columns: 1
+          square: false
+        card_param: cards
+        filter:
+          include:
+            - label: cdo
+              integration: webostv
+              domain: media_player
+            - entity_id: "*.cdo_*"
+              integration: webostv
+              domain: media_player
+        sort:
+          method: name
+        options:
+          type: media-control
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: LG webOS TV
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              integration: webostv
+            - entity_id: "*.cdo_*"
+              integration: webostv
+        sort:
+          method: name
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: LG ThinQ
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              integration: lg_thinq
+            - entity_id: "*.cdo_*"
+              integration: lg_thinq
+            - label: cdo
+              integration: lg_thinq_v2
+            - entity_id: "*.cdo_*"
+              integration: lg_thinq_v2
+        sort:
+          method: name
+
+  - title: All
+    path: all
+    icon: mdi:information-outline
+    theme: ecoflow_ocean
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: CDO — complete entity list
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+            - entity_id: "*.cdo_*"
+        sort:
+          method: domain
+          ignore_case: true
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: By integration
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              integration: ecobee
+            - entity_id: "*.cdo_*"
+              integration: ecobee
+            - label: cdo
+              integration: rheem_econet
+            - entity_id: "*.cdo_*"
+              integration: rheem_econet
+            - label: cdo
+              integration: tapo_control
+            - entity_id: "*.cdo_*"
+              integration: tapo_control
+            - label: cdo
+              integration: cast
+            - entity_id: "*.cdo_*"
+              integration: cast
+            - label: cdo
+              integration: lg_thinq
+            - entity_id: "*.cdo_*"
+              integration: lg_thinq
+            - label: cdo
+              integration: lg_thinq_v2
+            - entity_id: "*.cdo_*"
+              integration: lg_thinq_v2
+            - label: cdo
+              integration: webostv
+            - entity_id: "*.cdo_*"
+              integration: webostv
+        sort:
+          method: integration
+          ignore_case: true
