@@ -1,0 +1,14 @@
+# CDO property network — 172.18.1.0/24
+#
+# Optional: enable packages in configuration.yaml:
+#   homeassistant:
+#     packages: !include_dir_named packages
+#
+# Trusted-network login bypass for the CDO subnet (uncomment if desired):
+# homeassistant:
+#   auth_providers:
+#     - type: trusted_networks
+#       trusted_networks:
+#         - 172.18.1.0/24
+#       allow_bypass_login: true
+#     - type: homeassistant

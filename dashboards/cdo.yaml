@@ -342,6 +342,56 @@ views:
         sort:
           method: name
 
+  - title: Network
+    path: network
+    icon: mdi:lan
+    theme: ecoflow_ocean
+    cards:
+      - type: markdown
+        content: |
+          ## CDO Network — 172.18.1.0/24
+          Remote property subnet. HA reaches this network via site routing.
+          Tag devices with label **CDO** or prefix entity ids with **`cdo_`**.
+
+      - type: entities
+        title: Subnet health
+        show_header_toggle: false
+        entities:
+          - entity: binary_sensor.cdo_gateway
+            name: Gateway 172.18.1.1
+            icon: mdi:router-wireless
+          - entity: binary_sensor.cdo_network_end
+            name: Network 172.18.1.254
+            icon: mdi:lan-connect
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: CDO ping monitors
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+              domain: binary_sensor
+              entity_id: "*ping*"
+            - entity_id: "binary_sensor.cdo_*"
+              domain: binary_sensor
+            - entity_id: "binary_sensor.ping_172_18_1_*"
+        sort:
+          method: name
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: CDO devices (172.18.1.x subnet)
+          show_header_toggle: false
+        filter:
+          include:
+            - label: cdo
+            - entity_id: "*.cdo_*"
+        sort:
+          method: name
+
   - title: All
     path: all
     icon: mdi:information-outline
